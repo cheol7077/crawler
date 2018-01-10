@@ -16,11 +16,11 @@ sql = '
         id INTEGER PRIMARY KEY AUTO_INCREMENT,
         title TEXT,
         content LONGTEXT,
-        date date,
+        date datetime,
         url TEXT, 
         hits int,
-        replyCnt int,
-        commuID TEXT
+        commentCnt int,
+        communityID TEXT
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 '
 cursor.execute(sql)
@@ -41,13 +41,13 @@ def insert (title, content, date, url, commuID) :
     
     with conn.cursor() as cursor:
 
-        sql = '''INSERT INTO commu (title, content, date, url, hits, replyCnt, commuID)
+        sql = '''INSERT INTO commu (title, content, date, url, hits, commentCnt, commuID)
                     VALUES (%s, %s, %s, %s, null, null, %s)'''
         cursor.execute(sql, (title, content, date, url, commuID))
         conn.commit()        
         conn.close()
 
-def update (hits, replyCnt, conturl) :
+def update (hits, commentCnt, conturl) :
     conn = pymysql.connect(host='localhost',
         user = 'root',
         password = 'hubhub',
@@ -56,8 +56,8 @@ def update (hits, replyCnt, conturl) :
     
     with conn.cursor() as cursor:
 
-        sql = '''UPDATE commu SET hits=%s, replyCnt=%s where url=%s'''
-        cursor.execute(sql, (int(hits), int(replyCnt), conturl))
+        sql = '''UPDATE commu SET hits=%s, commentCnt=%s where url=%s'''
+        cursor.execute(sql, (int(hits), int(commentCnt), conturl))
         conn.commit()        
         conn.close()
 

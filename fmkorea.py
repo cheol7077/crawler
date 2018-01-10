@@ -63,10 +63,10 @@ def parseContent():
                     connDB.insert(title_value, content_value, date_value, link_value, 'c1')
                 else :    
                     hits = soup.select('#bd_capture > div.rd_hd.clear > div.board.clear > div.btm_area.clear > div.side.fr > span:nth-of-type(1) > b')
-                    replyCnt = soup.select('#bd_capture > div.rd_hd.clear > div.board.clear > div.btm_area.clear > div.side.fr > span:nth-of-type(3) > b')
+                    commentCnt = soup.select('#bd_capture > div.rd_hd.clear > div.board.clear > div.btm_area.clear > div.side.fr > span:nth-of-type(3) > b')
                     hits = hits[0].text
-                    replyCnt = replyCnt[0].text
-                    connDB.update(hits, replyCnt, link_value)
+                    commentCnt = commentCnt[0].text
+                    connDB.update(hits, commentCnt, link_value)
 
                 time.sleep(1)
 
