@@ -26,7 +26,7 @@ sql = '
 cursor.execute(sql)
 
 크롤링 사이트 목록
-CREATE TABLE commuID (
+CREATE TABLE communityID (
         id text
         communityName text
         baseUrl        
