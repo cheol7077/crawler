@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
-#import ppomppu
+import ppomppu
 import fmkorea
+import humoruniv
 #import threppa
 import threading
 from time import sleep, ctime
@@ -11,8 +12,11 @@ from multiprocessing import Pool
 PHANTOM_PATH = "C:\\phantomjs\\phantomjs.exe"
 
 #크롤링 사이트 목록 >> DB로 바꾸기 
-sites = {#'ppomppu' : "http://www.ppomppu.co.kr/zboard/zboard.php?id=humor", 
-        'fmkorea' : "http://www.fmkorea.com/index.php?mid=humor",
+sites = { 
+         'fmkorea' : "http://www.fmkorea.com/index.php?mid=humor",#c1
+#        'ppomppu' : "http://www.ppomppu.co.kr/zboard/zboard.php?id=humor",#c2
+#        'humoruniv' : "http://web.humoruniv.com/board/humor/list.html?table=pds"#c3
+#        'ruliweb' : 'http://bbs.ruliweb.com/community/board/300143'
 #        'todayhumor' : "http://www.todayhumor.co.kr/board/list.php?table=humordata",
 #        'threppa' : "http://threppa.com/bbs/board.php?bo_table=0207"
         }
@@ -21,9 +25,14 @@ def getUrl (site, page):
     # 분석 대상 HTML 가져오기
     browser = webdriver.PhantomJS(PHANTOM_PATH)
     baseUrl = sites.get(site)
-    values = {
-    'page': page
-    }
+    if (site == humoruniv):
+        values = {
+        'pg': page
+        }
+    else :        
+        values = {
+        'page': page
+        }
 
     params = parse.urlencode(values)  
     page_url = baseUrl + "&" + params
@@ -31,6 +40,7 @@ def getUrl (site, page):
     browser.get(page_url)
     html = browser.page_source
     return html
+
 
 def date_compare (contDate):
     contDt = contDate.split('-')
