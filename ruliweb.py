@@ -60,7 +60,7 @@ def parseContent():
                         break;
                             
                     if not (connDB.select(url_article)):
-                                connDB.insert(title, content, gdate, url_article, 'c1')
+                                connDB.insert(title, content, gdate, url_article, 'c4')
                     else :    
                                 hits =soup.select(".hit")[i+3].text
                                 replyCnt = str(soup.select(".num_reply")[i].text)
