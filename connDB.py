@@ -38,7 +38,8 @@ sql = '
         id INTEGER PRIMARY KEY AUTO_INCREMENT,
         file_name TEXT,
         path TEXT,
-        CONSTRAINT commu_id_fk FOREIGN KEY (commu_id) REFERENCES commu(id)
+        commu_id_fk integer,
+        foreign KEY (commu_id_fk) REFERENCES commu(id)
             ON DELETE CASCADE ON UPDATE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 '
