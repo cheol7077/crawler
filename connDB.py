@@ -31,6 +31,17 @@ CREATE TABLE communityID (
         communityName text
         baseUrl        
 )
+
+#이미지 저장db
+sql = '
+    CREATE TABLE attachFile (
+        id INTEGER PRIMARY KEY AUTO_INCREMENT,
+        file_name TEXT,
+        path TEXT,
+        CONSTRAINT commu_id_fk FOREIGN KEY (commu_id) REFERENCES commu(id)
+            ON DELETE CASCADE ON UPDATE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+'
 '''
 def insert (title, content, date, url, communityID) :
     conn = pymysql.connect(host='localhost',
@@ -44,8 +55,10 @@ def insert (title, content, date, url, communityID) :
         sql = '''INSERT INTO commu (title, content, date, url, hits, commentCnt, communityID)
                     VALUES (%s, %s, %s, %s, null, null, %s)'''
         cursor.execute(sql, (title, content, date, url, communityID))
-        conn.commit()        
+        conn.commit()
+        last_insert_id = cursor.lastrowid    
         conn.close()
+        return last_insert_id
 
 def update (hits, commentCnt, conturl) :
     conn = pymysql.connect(host='localhost',
@@ -75,4 +88,19 @@ def select (conturl) :
         result = cursor.fetchall()
         conn.close()
         return result;
+
+def insertAttachFile(file_name, file_path, commu_id) :
+    conn = pymysql.connect(host='localhost',
+        user = 'root',
+        password = 'hubhub',
+        db='community',
+        charset='utf8mb4')
+
+    with conn.cursor() as cursor:
+        sql = '''INSERT INTO attachFile (file_name, path, commu_id_fk)
+                    VALUES (%s, %s, %s)'''
+        cursor.execute(sql, (file_name, file_path, commu_id))
+        conn.commit()
+        conn.close()
+
 

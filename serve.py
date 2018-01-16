@@ -3,11 +3,13 @@ import ruliweb
 import ppomppu
 import fmkorea
 import humoruniv
-import threading
 from time import sleep, ctime
 from selenium import webdriver
 import urllib.parse as parse
+import urllib.request as req
 import datetime
+import os
+import sys
 from multiprocessing import Pool
 PHANTOM_PATH = "C:\\phantomjs\\phantomjs.exe"
 
@@ -54,6 +56,15 @@ def date_compare (contDate):
     elif (int(contDt[2]) < int(agoDt[2])):
         return False
     return True
+
+def save_file (img_url, file_path, file_name):
+    if (os.path.isdir( file_path) is not True):
+        os.makedirs(file_path)
+
+    fullFileName = os.path.join(file_path, file_name)
+    req.urlretrieve(img_url, fullFileName)
+    return file_path
+
 
 #def crawl(site):
 #    eval(site).parseContent()
