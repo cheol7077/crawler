@@ -7,7 +7,8 @@ import pymysql.cursors
 import connDB
 import serve
 import datetime
-browser = webdriver.PhantomJS()
+PHANTOM_PATH = "C:\\phantomjs\\phantomjs.exe"
+browser = webdriver.PhantomJS(PHANTOM_PATH)
 
 def parseContent():
     # HTML 분석하기
