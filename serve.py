@@ -62,9 +62,13 @@ def save_file (img_url, file_path, file_name):
         os.makedirs(file_path)
 
     fullFileName = os.path.join(file_path, file_name)
-    req.urlretrieve(img_url, fullFileName)
+    try:
+        req.urlretrieve(img_url, fullFileName)
+    except:
+        print('==========================')
+        print('예외파일: ' + file_path)
+        print('==========================')
     return file_path
-
 
 #def crawl(site):
 #    eval(site).parseContent()
