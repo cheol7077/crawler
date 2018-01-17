@@ -34,7 +34,7 @@ CREATE TABLE communityID (
 
 #이미지 저장db
 sql = '
-    CREATE TABLE attachFile (
+     CREATE TABLE attachFile (
         id INTEGER PRIMARY KEY AUTO_INCREMENT,
         file_name TEXT,
         path TEXT,

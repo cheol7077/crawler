@@ -7,6 +7,7 @@ import time
 import serve
 import connDB
 import datetime
+
 EXCEPTION = "Video 태그를 지원하지 않는 브라우저입니다."
 BASE_URL = "http://www.fmkorea.com/"
 HUMOR_URL = BASE_URL+"index.php?mid=humor"
@@ -29,7 +30,7 @@ def parseContent():
             if title.string is not None:
                 title_value = title.string
                 link_value = BASE_URL + title.attrs['href']
-                content_value = ""                
+                content_value = ""
                 html = req.urlopen(link_value)
                 soup = BeautifulSoup(html, "html.parser")
 
@@ -53,16 +54,21 @@ def parseContent():
 
                         for child in content.descendants:
                             if child.name == 'img' or child.name == 'source':
-                                if((child.attrs['src']).startswith('https:')):
+                                if((child.attrs['src']).startswith('https:') or (child.attrs['src']).startswith('http:')):
                                     attachFile = child.attrs['src']
+#                                elif ((child.attrs['src']).startswith('//getfile'):
+                                
                                 else :
                                     attachFile = "https:" + child.attrs['src']
                                 content_value += attachFile                                
                                 file_path = 'file'+'/'+str(configDate) +'/'+ 'fmkorea' +boardID
                                 file_name = attachFile.split('/')[-1]
-                                file_path = serve.save_file(attachFile, file_path, file_name)
-                                file_name_arr.append(file_name)
-                                file_path_arr.append(file_path) 
+                                if(file_name == 'transparent.gif'):
+                                    pass
+                                else:
+                                    file_path = serve.save_file(attachFile, file_path, file_name)
+                                    file_name_arr.append(file_name)
+                                    file_path_arr.append(file_path) 
                             elif child.name == 'iframe':
                                 content_value += child.attrs['src']
                             elif type(child) is bs4.element.NavigableString and child != EXCEPTION:
@@ -71,7 +77,7 @@ def parseContent():
                 #이거
                     last_insert_id = connDB.insert(title_value, content_value, date_value, link_value, 'c1')
                     if (last_insert_id and file_name_arr):
-                        for index, file in enumerate(file_name_arr):
+                        for index, file in enumerate(file_name_arr):                            
                             print(file_name_arr[index], file_path_arr[index])
                             connDB.insertAttachFile(file_name_arr[index], file_path_arr[index], last_insert_id)
                 

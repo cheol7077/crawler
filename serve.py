@@ -8,6 +8,7 @@ from selenium import webdriver
 import urllib.parse as parse
 import urllib.request as req
 import datetime
+import traceback
 import os
 import sys
 from multiprocessing import Pool
@@ -62,13 +63,19 @@ def save_file (img_url, file_path, file_name):
         os.makedirs(file_path)
 
     fullFileName = os.path.join(file_path, file_name)
+
     try:
-        req.urlretrieve(img_url, fullFileName)
-    except:
+        r = req.Request(img_url, headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'})
+        res = req.urlopen(r)
+        with open(fullFileName, 'wb') as f:
+            f.write(res.read())
+            f.close()
+    except :
         print('==========================')
-        print('예외파일: ' + file_path)
+        traceback.print_exc()
+        print(' : ' + img_url + '      저장경로'+ file_path)
         print('==========================')
-    return file_path
+    return file_path    
 
 #def crawl(site):
 #    eval(site).parseContent()
