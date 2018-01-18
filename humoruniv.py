@@ -1,7 +1,5 @@
 import re
 from selenium import webdriver
-import re
-from selenium import webdriver
 import bs4
 from bs4 import BeautifulSoup
 import pymysql.cursors
