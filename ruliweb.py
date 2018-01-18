@@ -71,7 +71,7 @@ def parseContent():
                         content += item.attrs['src']
                     content += '\\'
 
-                last_insert_id = connDB.insert(title, content, gdate, url_article, 'c4')
+                last_insert_id = connDB.insert(title, content, gdate, url_article, hits, replyCnt,'c4')
                 if (last_insert_id and file_name_arr):
                     for index, file in enumerate(file_name_arr):
                         print(file_name_arr[index], file_path_arr[index])

@@ -14,7 +14,8 @@ HUMOR_URL = BASE_URL+"index.php?mid=humor"
 LINK_LIST = "#bd_486616_0 > div > table > tbody > tr > td.title > a:nth-of-type(1)"
 CONTENT = "#bd_capture > div.rd_body.clear > article > div"
 DATE = "#bd_capture > div.rd_hd.clear > div.board.clear > div.top_area.ngeb > span"
-
+HITS = '#bd_capture > div.rd_hd.clear > div.board.clear > div.btm_area.clear > div.side.fr > span:nth-of-type(1) > b'
+COMMENTCNT = '#bd_capture > div.rd_hd.clear > div.board.clear > div.btm_area.clear > div.side.fr > span:nth-of-type(3) > b'
 def parseContent():
     page = 0
     loop = True
@@ -34,24 +35,23 @@ def parseContent():
                 html = req.urlopen(link_value)
                 soup = BeautifulSoup(html, "html.parser")
 
+                date = soup.select_one(DATE)
+                date_value = date.string.replace('.', '-')
+                date_value = datetime.datetime.strptime(date_value, '%Y-%m-%d %H:%M')
+                configDate = date_value.strftime('%Y-%m-%d')
+
+                #3일전 데이터만 검사
+                if serve.date_compare(configDate) is False:
+                    loop = False
+                    break;
+
                 if not (connDB.select(link_value)):
-                    date = soup.select_one(DATE)
-                    date_value = date.string.replace('.', '-')
-                    date_value = datetime.datetime.strptime(date_value, '%Y-%m-%d %H:%M')
-                    configDate = date_value.strftime('%Y-%m-%d')
-
-                    #3일전 데이터만 검사
-                    if serve.date_compare(configDate) is False:
-                        loop = False
-                        break;
-
                     boardID = soup.select_one('.document_address > .a').attrs['href']
                     contents = soup.select(CONTENT)
 
                     file_path_arr = []
                     file_name_arr = []
                     for content in contents:
-
                         for child in content.descendants:
                             if child.name == 'img' or child.name == 'source':
                                 if((child.attrs['src']).startswith('https:') or (child.attrs['src']).startswith('http:')):
@@ -74,16 +74,20 @@ def parseContent():
                             elif type(child) is bs4.element.NavigableString and child != EXCEPTION:
                                 content_value += child
                             content_value += "\\"
+                    hits = soup.select(HITS)
+                    commentCnt = soup.select(COMMENTCNT)
+                    hits = hits[0].text
+                    commentCnt = commentCnt[0].text
                 #이거
-                    last_insert_id = connDB.insert(title_value, content_value, date_value, link_value, 'c1')
+                    last_insert_id = connDB.insert(title_value, content_value, date_value, link_value, hits, commentCnt, 'c1')
                     if (last_insert_id and file_name_arr):
                         for index, file in enumerate(file_name_arr):                            
                             print(file_name_arr[index], file_path_arr[index])
                             connDB.insertAttachFile(file_name_arr[index], file_path_arr[index], last_insert_id)
                 
                 else : #db에 있는거면 조회수랑 댓글수 가져오기     
-                    hits = soup.select('#bd_capture > div.rd_hd.clear > div.board.clear > div.btm_area.clear > div.side.fr > span:nth-of-type(1) > b')
-                    commentCnt = soup.select('#bd_capture > div.rd_hd.clear > div.board.clear > div.btm_area.clear > div.side.fr > span:nth-of-type(3) > b')
+                    hits = soup.select(HITS)
+                    commentCnt = soup.select(COMMENTCNT)
                     hits = hits[0].text
                     commentCnt = commentCnt[0].text
                     connDB.update(hits, commentCnt, link_value)

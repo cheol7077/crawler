@@ -24,20 +24,22 @@ def parseContent():
             browser.get(boardUrl)
             html = browser.page_source
             soup = BeautifulSoup(html, "html.parser")
+            
+            #날짜
+            date = soup.select_one("#if_date > span:nth-of-type(2)").text
+            date = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+            #3일전 데이터만 검사
+            configDate = date.strftime('%Y-%m-%d')
+            if serve.date_compare(configDate) is False:
+                loop = False
+                break;
+
             if not (connDB.select(boardUrl)):
                 #원문링크
                 contentUrl = boardUrl
                 #제목
                 title = soup.select_one("#ai_cm_title")
                 title = title.text  #text content string 중에 되는거 ㅋㅋㅋ
-                #날짜
-                date = soup.select_one("#if_date > span:nth-of-type(2)").text
-                date = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-                #3일전 데이터만 검사
-                configDate = date.strftime('%Y-%m-%d')
-                if serve.date_compare(configDate) is False:
-                    loop = False
-                    break;
 
                 boardID = boardUrl.split('number=')[-1]
                 
@@ -66,8 +68,10 @@ def parseContent():
                     elif type(cont_child) is bs4.element.NavigableString :
                         content += cont_child
                     content += "\\"
-
-                last_insert_id = connDB.insert(title, content, date, contentUrl, 'c3')
+                hits = soup.select_one('#content_info > span:nth-of-type(5)').text
+                commentCnt = soup.find(string = re.compile(r"답글마당"))            
+                commentCnt = re.sub('[^0-9]', '', commentCnt)
+                last_insert_id = connDB.insert(title, content, date, contentUrl, hits, commentCnt, 'c3')
                 if (last_insert_id and file_name_arr):
                     for index, file in enumerate(file_name_arr):
                         print(file_name_arr[index], file_path_arr[index])
@@ -75,9 +79,9 @@ def parseContent():
             #db에 있는거면 조회수랑 댓글수 가져오기 
             else :
                 hits = soup.select_one('#content_info > span:nth-of-type(5)').text
-                replyCnt = soup.find(string = re.compile(r"답글마당"))            
-                replyCnt = re.sub('[^0-9]', '', replyCnt)
-                connDB.update(hits, replyCnt, contentUrl)
+                commentCnt = soup.find(string = re.compile(r"답글마당"))            
+                commentCnt = re.sub('[^0-9]', '', commentCnt)
+                connDB.update(hits, commentCnt, contentUrl)
 
         if loop is False:
             break

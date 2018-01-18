@@ -28,7 +28,17 @@ def parseContent():
                     contentUrl = boardUrl
                     browser.get(boardUrl)
                     html = browser.page_source
-                    soup = BeautifulSoup(html, "html.parser")            
+                    soup = BeautifulSoup(html, "html.parser")   
+                    
+                    #날짜
+                    date = soup.find(string = re.compile(r"\d\d\d\d[-]\d\d[-]\d\d"))
+                    date = date.split(': ')[1].strip()
+                    date = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M')
+                    #3일전 데이터만 검사
+                    configDate = date.strftime('%Y-%m-%d')
+                    if serve.date_compare(configDate) is False:
+                        loop = False
+                        break;        
                     
                     if not (connDB.select(boardUrl)):
                         #원문링크
@@ -38,15 +48,6 @@ def parseContent():
                         #제목
                         title = soup.select_one(".view_title2")
                         title = title.text  #text content string 중에 되는거 ㅋㅋㅋ
-                        #날짜
-                        date = soup.find(string = re.compile(r"\d\d\d\d[-]\d\d[-]\d\d"))
-                        date = date.split(': ')[1].strip()
-                        date = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M')
-                        #3일전 데이터만 검사
-                        configDate = date.strftime('%Y-%m-%d')
-                        if serve.date_compare(configDate) is False:
-                            loop = False
-                            break;
 
                         boardID = boardUrl.split('no=')[-1]
 
@@ -76,7 +77,17 @@ def parseContent():
                                 content += cont_child
                             content += "\\"
                             
-                        last_insert_id = connDB.insert(title, content, date, contentUrl, 'c2')
+                        try :
+                            commentCnt = soup.select_one('.list_comment').text
+                        except AttributeError as attrE:
+                            commentCnt = 0
+                        else :
+                            commentCnt = int(commentCnt)
+                        
+                        hits = soup.find(string = re.compile(r"조회수: \d+")).strip()
+                        hits = hits.split("/")[0].strip()
+                        hits = hits.split(": ")[1].strip()                            
+                        last_insert_id = connDB.insert(title, content, date, contentUrl, hits, commentCnt, 'c2')
                         if (last_insert_id and file_name_arr):
                             for index, file in enumerate(file_name_arr):
                                 print(file_name_arr[index], file_path_arr[index])

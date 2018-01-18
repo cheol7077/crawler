@@ -54,8 +54,8 @@ def insert (title, content, date, url, communityID) :
     with conn.cursor() as cursor:
 
         sql = '''INSERT INTO commu (title, content, date, url, hits, commentCnt, communityID)
-                    VALUES (%s, %s, %s, %s, null, null, %s)'''
-        cursor.execute(sql, (title, content, date, url, communityID))
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)'''
+        cursor.execute(sql, (title, content, date, url, hits, commentCnt, communityID))
         conn.commit()
         last_insert_id = cursor.lastrowid    
         conn.close()
