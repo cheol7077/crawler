@@ -44,7 +44,7 @@ sql = '
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 '
 '''
-def insert (title, content, date, url, communityID) :
+def insert (title, content, date, url, hits, commentCnt, communityID) :
     conn = pymysql.connect(host='localhost',
         user = 'root',
         password = 'hubhub',
