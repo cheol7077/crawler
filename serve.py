@@ -16,9 +16,9 @@ PHANTOM_PATH = "C:\\phantomjs\\phantomjs.exe"
 
 #크롤링 사이트 목록 >> DB로 바꾸기 
 sites = { 
-         'fmkorea' : "http://www.fmkorea.com/index.php?mid=humor",#c1
+#         'fmkorea' : "http://www.fmkorea.com/index.php?mid=humor",#c1
 #        'ppomppu' : "http://www.ppomppu.co.kr/zboard/zboard.php?id=humor",#c2
-#        'humoruniv' : "http://web.humoruniv.com/board/humor/list.html?table=pds", #c3
+        'humoruniv' : "http://web.humoruniv.com/board/humor/list.html?table=pds", #c3
 #        'ruliweb' : "http://bbs.ruliweb.com/community/board/300143/list?view_best=1", #c4
 #        'todayhumor' : "http://www.todayhumor.co.kr/board/list.php?table=humordata",
         }
@@ -47,7 +47,7 @@ def getUrl (site, page):
 def date_compare (contDate):
     contDt = contDate.split('-')
     today = datetime.date.today()
-    ago = today - datetime.timedelta(3)
+    ago = today - datetime.timedelta(days=3)
     temp = str(ago).split(':')[0]
     agoDt = temp.split('-')
     if (int(contDt[0]) < int(agoDt[0])) :

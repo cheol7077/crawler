@@ -26,7 +26,7 @@ def parseContent():
             soup = BeautifulSoup(html, "html.parser")
             
             #날짜
-            date = soup.select_one("#if_date > span:nth-of-type(2)").text
+            date = soup.select_one("#if_date > span:nth-of-type(2)").text.strip() #웃긴자료 = 베스트게시물 : 이동시간으로 비교
             date = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
             #3일전 데이터만 검사
             configDate = date.strftime('%Y-%m-%d')
@@ -41,12 +41,15 @@ def parseContent():
                 title = soup.select_one("#ai_cm_title")
                 title = title.text  #text content string 중에 되는거 ㅋㅋㅋ
 
+                date = soup.select_one("#if_date > span:nth-of-type(1)").text.strip() #게시글 작성시간으로 최신순 정렬 
+                date = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+                
                 boardID = boardUrl.split('number=')[-1]
                 
                 file_path_arr = []
                 file_name_arr = []
                 #본문
-                contents = soup.select_one("#cnts")
+                contents = soup.select_one("#wrap_copy")
                 content = ""
                 for cont_child in contents.descendants:
                     #img
@@ -69,6 +72,8 @@ def parseContent():
                         content += cont_child
                     content += "\\"
                 hits = soup.select_one('#content_info > span:nth-of-type(5)').text
+                if ',' in hits:
+                    hits = hits.replace(',','')
                 commentCnt = soup.find(string = re.compile(r"답글마당"))            
                 commentCnt = re.sub('[^0-9]', '', commentCnt)
                 last_insert_id = connDB.insert(title, content, date, contentUrl, hits, commentCnt, 'c3')
@@ -79,6 +84,8 @@ def parseContent():
             #db에 있는거면 조회수랑 댓글수 가져오기 
             else :
                 hits = soup.select_one('#content_info > span:nth-of-type(5)').text
+                if ',' in hits:
+                    hits = hits.replace(',','')
                 commentCnt = soup.find(string = re.compile(r"답글마당"))            
                 commentCnt = re.sub('[^0-9]', '', commentCnt)
                 connDB.update(hits, commentCnt, contentUrl)
