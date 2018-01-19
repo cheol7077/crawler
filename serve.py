@@ -16,11 +16,10 @@ PHANTOM_PATH = "C:\\phantomjs\\phantomjs.exe"
 
 #크롤링 사이트 목록 >> DB로 바꾸기 
 sites = { 
-#         'fmkorea' : "http://www.fmkorea.com/index.php?mid=humor",#c1
-#        'ppomppu' : "http://www.ppomppu.co.kr/zboard/zboard.php?id=humor",#c2
-        'humoruniv' : "http://web.humoruniv.com/board/humor/list.html?table=pds", #c3
-#        'ruliweb' : "http://bbs.ruliweb.com/community/board/300143/list?view_best=1", #c4
-#        'todayhumor' : "http://www.todayhumor.co.kr/board/list.php?table=humordata",
+         'fmkorea' : "http://www.fmkorea.com/index.php?mid=humor",#c1
+         'ppomppu' : "http://www.ppomppu.co.kr/zboard/zboard.php?id=humor",#c2
+         'humoruniv' : "http://web.humoruniv.com/board/humor/list.html?table=pds", #c3
+         'ruliweb' : "http://bbs.ruliweb.com/community/board/300143/list?view_best=1", #c4
         }
 
 def getUrl (site, page):
@@ -91,7 +90,7 @@ if __name__ == "__main__":
         eval(site).parseContent()
 
     print("finish")
-    
+    print('start crawl : ', ctime())
     #pool = Pool(processes = 4)
     #pool.map(crawl, siteList)
 
