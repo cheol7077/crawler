@@ -46,7 +46,7 @@ def getUrl (site, page):
 def date_compare (contDate):
     contDt = contDate.split('-')
     today = datetime.date.today()
-    ago = today - datetime.timedelta(days=3)
+    ago = today - datetime.timedelta(days=1)
     temp = str(ago).split(':')[0]
     agoDt = temp.split('-')
     if (int(contDt[0]) < int(agoDt[0])) :
@@ -76,8 +76,8 @@ def save_file (img_url, file_path, file_name):
         print('==========================')
     return file_path    
 
-#def crawl(site):
-#    eval(site).parseContent()
+def crawl(site):
+    eval(site).parseContent()
 
 #크롤링 실행
 if __name__ == "__main__":
@@ -86,14 +86,17 @@ if __name__ == "__main__":
     print('start crawl : ', ctime())
 
 
-    for site in siteList :
-        eval(site).parseContent()
+#    for site in siteList :
+#        eval(site).parseContent()
 
-    print("finish")
-    print('start crawl : ', ctime())
-    #pool = Pool(processes = 4)
-    #pool.map(crawl, siteList)
+#    print("finish")
+#    print('start crawl : ', ctime())
+    pool = Pool(processes = 4)
+    pool.map(crawl, siteList)
 
     #모든 프로세스를 닫아야함///
-    #pool.close()
+    pool.join()
+    print("finish")
+    print('start crawl : ', ctime())
+    pool.close()
 
