@@ -29,10 +29,12 @@ def parseContent():
 
         for title in titles:
             if title.string is not None:
+                time.sleep(5)
                 title_value = title.string
                 link_value = BASE_URL + title.attrs['href']
                 content_value = ""
-                html = req.urlopen(link_value)
+                r = req.Request(link_value, headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'})
+                html = req.urlopen(r)                
                 soup = BeautifulSoup(html, "html.parser")
 
                 date = soup.select_one(DATE)
@@ -55,14 +57,14 @@ def parseContent():
                         for child in content.descendants:
                             if child.name == 'img' or child.name == 'source':
                                 if((child.attrs['src']).startswith('https:') or (child.attrs['src']).startswith('http:')):
-                                    attachFile = child.attrs['src']
-#                                elif ((child.attrs['src']).startswith('//getfile'):
-                                
+                                    attachFile = child.attrs['src']                                    
                                 else :
                                     attachFile = "https:" + child.attrs['src']
                                 content_value += attachFile                                
-                                file_path = 'file'+'/'+str(configDate) +'/'+ 'fmkorea' +boardID
+                                file_path = 'file'+'/'+ 'c1' +boardID
+                                
                                 file_name = attachFile.split('/')[-1]
+                                
                                 if(file_name == 'transparent.gif'):
                                     pass
                                 else:
@@ -79,11 +81,10 @@ def parseContent():
                     hits = hits[0].text
                     commentCnt = commentCnt[0].text
                 #이거
-                    connDB.insert(boardID, title_value, content_value, date_value, link_value, hits, commentCnt, 'c1')
+                    last_insert_id = connDB.insert(boardID.replace('/',''), title_value, content_value, date_value, link_value, hits, commentCnt, 'c1')
                     if (last_insert_id and file_name_arr):
-                        for index, file in enumerate(file_name_arr):                            
-                            print(file_name_arr[index], file_path_arr[index])
-                            connDB.insertAttachFile(file_name_arr[index], file_path_arr[index], boardID)
+                        for index, file in enumerate(file_name_arr):          
+                            connDB.insertAttachFile(file_name_arr[index], file_path_arr[index], last_insert_id)
                 
                 else : #db에 있는거면 조회수랑 댓글수 가져오기     
                     hits = soup.select(HITS)
@@ -92,7 +93,7 @@ def parseContent():
                     commentCnt = commentCnt[0].text
                     connDB.update(hits, commentCnt, link_value)
 
-                time.sleep(1)
+                
 
         if loop is False:
             break

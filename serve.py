@@ -16,9 +16,9 @@ PHANTOM_PATH = "C:\\phantomjs\\phantomjs.exe"
 
 #크롤링 사이트 목록 >> DB로 바꾸기 
 sites = { 
-#         'fmkorea' : "http://www.fmkorea.com/index.php?mid=humor",#c1
-#         'ppomppu' : "http://www.ppomppu.co.kr/zboard/zboard.php?id=humor",#c2
-#         'humoruniv' : "http://web.humoruniv.com/board/humor/list.html?table=pds", #c3
+         'fmkorea' : "http://www.fmkorea.com/index.php?mid=humor",#c1
+         'ppomppu' : "http://www.ppomppu.co.kr/zboard/zboard.php?id=humor",#c2
+         'humoruniv' : "http://web.humoruniv.com/board/humor/list.html?table=pds", #c3
          'ruliweb' : "http://bbs.ruliweb.com/community/board/300143/list?view_best=1", #c4
         }
 
@@ -94,11 +94,17 @@ if __name__ == "__main__":
     try:
         pool = Pool(processes = 4)
         pool.map(crawl, siteList)
-    except:
+        pool.close()
+    except KeyboardInterrupt:
         pool.terminate()
+        print('KeyboardInterrupt')
+    except :
+        print('==========================')
+        traceback.print_exc()
+        print('==========================')
+        pool.terminate()
+    finally:
         pool.join()
-    #모든 프로세스를 닫아야함///
-    pool.close()
-    print("finish")
-    print('start crawl : ', ctime())
-    pool.join()
+        print("finish : ",  ctime())
+        
+

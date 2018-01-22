@@ -5,7 +5,7 @@ import pymysql.cursors
 import connDB
 import serve
 import datetime
-
+import urllib.request as req
 
 def parseContent():
     page = 0
@@ -15,6 +15,7 @@ def parseContent():
         html = serve.getUrl('ruliweb', page)
         soup = BeautifulSoup(html, "html.parser")
         for i in range(0, 29): 
+            time.sleep(10)
             title = str(soup.select(".table_body div a")[i].text.strip())
             link = soup.select(".table_body div a")[i]
             url_article = str(link.attrs["href"])
@@ -24,8 +25,9 @@ def parseContent():
             replyCnt = replyCnt.replace("(", "")
             replyCnt = replyCnt.replace(")", "")
             date = soup.select('.time')[i+3].text.strip()
+            date = date.replace(".","-")
             try:
-                date = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M')
+                date = datetime.datetime.strptime(date, '%Y-%m-%d')
                 configDate = date.strftime('%Y-%m-%d')
             except ValueError as e:
                 pass
@@ -34,7 +36,8 @@ def parseContent():
                     loop = False
                     break;
             if not (connDB.select(url_article)):
-                response = urllib.request.urlopen(url_article)
+                r = req.Request(url_article, headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'})
+                response = req.urlopen(r)
                 soup_article = BeautifulSoup(response, "html.parser")
                 contents = soup_article.select_one(".view_content")
                 content = ""
@@ -59,7 +62,7 @@ def parseContent():
                         else :
                             attachFile = "https:" + item.attrs['src']
                         content += attachFile                                
-                        file_path = 'file'+'/'+str(configDate) +'/'+ 'ruliweb' +'/'+ boardID
+                        file_path = 'file'+'/'+ 'c4' +'/'+ boardID
                         file_name = attachFile.split('/')[-1]
                         file_path = serve.save_file(attachFile, file_path, file_name)
                         file_name_arr.append(file_name)
@@ -71,12 +74,11 @@ def parseContent():
                         content += item.attrs['src']
                     content += '\\'
 
-                connDB.insert(boardID, title, content, gdate, url_article, hits, replyCnt,'c4')
+                last_insert_id = connDB.insert(boardID, title, content, gdate, url_article, hits, replyCnt,'c4')
                 if (last_insert_id and file_name_arr):
                     for index, file in enumerate(file_name_arr):
-                        print(file_name_arr[index], file_path_arr[index])
-                        connDB.insertAttachFile(file_name_arr[index], file_path_arr[index], boardID)
-                connDB.insertThumbnail(file_name_arr[index], last_insert_id)
+                        connDB.insertAttachFile(file_name_arr[index], file_path_arr[index], last_insert_id)
+                        
             else :
                 hits =soup.select(".hit")[i+3].text
                 replyCnt = str(soup.select(".num_reply")[i].text)
