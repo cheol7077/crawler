@@ -79,11 +79,11 @@ def parseContent():
                     hits = hits[0].text
                     commentCnt = commentCnt[0].text
                 #이거
-                    last_insert_id = connDB.insert(title_value, content_value, date_value, link_value, hits, commentCnt, 'c1')
+                    connDB.insert(boardID, title_value, content_value, date_value, link_value, hits, commentCnt, 'c1')
                     if (last_insert_id and file_name_arr):
                         for index, file in enumerate(file_name_arr):                            
                             print(file_name_arr[index], file_path_arr[index])
-                            connDB.insertAttachFile(file_name_arr[index], file_path_arr[index], last_insert_id)
+                            connDB.insertAttachFile(file_name_arr[index], file_path_arr[index], boardID)
                 
                 else : #db에 있는거면 조회수랑 댓글수 가져오기     
                     hits = soup.select(HITS)

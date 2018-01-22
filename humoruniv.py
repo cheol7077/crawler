@@ -76,11 +76,11 @@ def parseContent():
                     hits = hits.replace(',','')
                 commentCnt = soup.find(string = re.compile(r"답글마당"))            
                 commentCnt = re.sub('[^0-9]', '', commentCnt)
-                last_insert_id = connDB.insert(title, content, date, contentUrl, hits, commentCnt, 'c3')
+                connDB.insert(boardID, title, content, date, contentUrl, hits, commentCnt, 'c3')
                 if (last_insert_id and file_name_arr):
                     for index, file in enumerate(file_name_arr):
                         print(file_name_arr[index], file_path_arr[index])
-                        connDB.insertAttachFile(file_name_arr[index], file_path_arr[index], last_insert_id)
+                        connDB.insertAttachFile(file_name_arr[index], file_path_arr[index], boardID)
             #db에 있는거면 조회수랑 댓글수 가져오기 
             else :
                 hits = soup.select_one('#content_info > span:nth-of-type(5)').text

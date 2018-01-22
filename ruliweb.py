@@ -71,12 +71,12 @@ def parseContent():
                         content += item.attrs['src']
                     content += '\\'
 
-                last_insert_id = connDB.insert(title, content, gdate, url_article, hits, replyCnt,'c4')
+                connDB.insert(boardID, title, content, gdate, url_article, hits, replyCnt,'c4')
                 if (last_insert_id and file_name_arr):
                     for index, file in enumerate(file_name_arr):
                         print(file_name_arr[index], file_path_arr[index])
-                        connDB.insertAttachFile(file_name_arr[index], file_path_arr[index], last_insert_id)
-
+                        connDB.insertAttachFile(file_name_arr[index], file_path_arr[index], boardID)
+                connDB.insertThumbnail(file_name_arr[index], last_insert_id)
             else :
                 hits =soup.select(".hit")[i+3].text
                 replyCnt = str(soup.select(".num_reply")[i].text)
