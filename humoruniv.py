@@ -38,8 +38,8 @@ def parseContent():
             if serve.date_compare(configDate) is False:
                 loop = False
                 break;
-
-            if not (connDB.select(boardUrl)):
+            boardID = boardUrl.split('number=')[-1]
+            if not (connDB.select(boardID)):
                 #원문링크
                 contentUrl = boardUrl
                 #제목
@@ -102,7 +102,7 @@ def parseContent():
                     hits = hits.replace(',','')
                 commentCnt = soup.find(string = re.compile(r"답글마당"))            
                 commentCnt = re.sub('[^0-9]', '', commentCnt)
-                connDB.update(hits, commentCnt, boardUrl)
+                connDB.update(hits, commentCnt, boardID)
 
         if loop is False:
             break
