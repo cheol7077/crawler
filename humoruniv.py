@@ -8,7 +8,12 @@ import serve
 import datetime
 PHANTOM_PATH = "C:\\phantomjs\\phantomjs.exe"
 browser = webdriver.PhantomJS(PHANTOM_PATH)
-
+emoji_pattern = re.compile("["
+        u"\U0001F600-\U0001F64F"  # emoticons
+        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+        u"\U0001F680-\U0001F6FF"  # transport & map symbols
+        u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                           "]+", flags=re.UNICODE)
 def parseContent():
     # HTML 분석하기
     page = -1
@@ -24,7 +29,7 @@ def parseContent():
             browser.get(boardUrl)
             html = browser.page_source
             soup = BeautifulSoup(html, "html.parser")
-            
+                  
             #날짜
             date = soup.select_one("#if_date > span:nth-of-type(2)").text.strip() #웃긴자료 = 베스트게시물 : 이동시간으로 비교
             date = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
@@ -66,9 +71,15 @@ def parseContent():
                         file_path_arr.append(file_path)
                     #video
                     elif cont_child.name == 'iframe':
-                        content += cont_child.attrs['src'] + "\\"
+                        content += cont_child.attrs['src']
+                    #audio
+                    elif cont_child.name == 'audio':
+                        pass
                     #text
                     elif type(cont_child) is bs4.element.NavigableString :
+                        cont_child = emoji_pattern.sub(r'',cont_child)
+                        if 'var mp3str' in cont_child:
+                           continue
                         content += cont_child
                     content += "\\"
                 hits = soup.select_one('#content_info > span:nth-of-type(5)').text
@@ -87,7 +98,7 @@ def parseContent():
                     hits = hits.replace(',','')
                 commentCnt = soup.find(string = re.compile(r"답글마당"))            
                 commentCnt = re.sub('[^0-9]', '', commentCnt)
-                connDB.update(hits, commentCnt, contentUrl)
+                connDB.update(hits, commentCnt, boardUrl)
 
         if loop is False:
             break

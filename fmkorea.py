@@ -29,7 +29,7 @@ def parseContent():
 
         for title in titles:
             if title.string is not None:
-                time.sleep(5)
+                time.sleep(2)
                 title_value = title.string
                 link_value = BASE_URL + title.attrs['href']
                 content_value = ""

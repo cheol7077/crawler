@@ -15,7 +15,7 @@ def parseContent():
         html = serve.getUrl('ruliweb', page)
         soup = BeautifulSoup(html, "html.parser")
         for i in range(0, 29): 
-            time.sleep(10)
+            time.sleep(2)
             title = str(soup.select(".table_body div a")[i].text.strip())
             link = soup.select(".table_body div a")[i]
             url_article = str(link.attrs["href"])
@@ -85,7 +85,6 @@ def parseContent():
                 replyCnt = replyCnt.replace("(", "")
                 replyCnt = replyCnt.replace(")", "")
                 connDB.update(hits, replyCnt, url_article)
-
-            #time.sleep(1)
+      
         if loop is False:
             break

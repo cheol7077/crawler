@@ -26,7 +26,7 @@ def getUrl (site, page):
     # 분석 대상 HTML 가져오기
     browser = webdriver.PhantomJS(PHANTOM_PATH)
     baseUrl = sites.get(site)
-    if (site == humoruniv):
+    if (site == 'humoruniv'):
         values = {
         'pg': page
         }
