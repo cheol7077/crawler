@@ -7,7 +7,12 @@ import time
 import serve
 import connDB
 import datetime
-
+emoji_pattern = re.compile("["
+        u"\U0001F600-\U0001F64F"  # emoticons
+        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+        u"\U0001F680-\U0001F6FF"  # transport & map symbols
+        u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                           "]+", flags=re.UNICODE)
 EXCEPTION = "Video 태그를 지원하지 않는 브라우저입니다."
 BASE_URL = "http://www.fmkorea.com/"
 HUMOR_URL = BASE_URL+"index.php?mid=humor"
@@ -72,8 +77,11 @@ def parseContent():
                                     file_name_arr.append(file_name)
                                     file_path_arr.append(file_path) 
                             elif child.name == 'iframe':
-                                content_value += child.attrs['src']
+                                content_value += child.attrs['src']                            
+                            elif cont_child.name == 'audio':
+                                pass
                             elif type(child) is bs4.element.NavigableString and child != EXCEPTION:
+                                child = emoji_pattern.sub(r'',child)
                                 content_value += child
                             content_value += "\\"
                     hits = soup.select(HITS)

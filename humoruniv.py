@@ -75,6 +75,10 @@ def parseContent():
                     #audio
                     elif cont_child.name == 'audio':
                         pass
+                    #except_text 태그 잘못 걸리면 빠져나와야함
+                    elif cont_child.name == 'div':
+                        if(cont_child.attrs['id'] == 'wrap_up_down'):
+                           break
                     #text
                     elif type(cont_child) is bs4.element.NavigableString :
                         cont_child = emoji_pattern.sub(r'',cont_child)

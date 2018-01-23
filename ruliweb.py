@@ -6,7 +6,12 @@ import connDB
 import serve
 import datetime
 import urllib.request as req
-
+emoji_pattern = re.compile("["
+        u"\U0001F600-\U0001F64F"  # emoticons
+        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+        u"\U0001F680-\U0001F6FF"  # transport & map symbols
+        u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                           "]+", flags=re.UNICODE)
 def parseContent():
     page = 0
     loop = True
@@ -69,7 +74,11 @@ def parseContent():
                         file_path_arr.append(file_path)
                     elif item.name == "p" :
                         if item.string is not None : 
-                            content += item.string 
+                            cont = emoji_pattern.sub(r'',item.string)
+                            content += cont 
+                    #audio
+                    elif cont_child.name == 'audio':
+                        pass
                     elif item.name == "iframe":
                         content += item.attrs['src']
                     content += '\\'

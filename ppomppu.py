@@ -9,7 +9,12 @@ import serve
 import datetime
 PHANTOM_PATH = "C:\\phantomjs\\phantomjs.exe"
 browser = webdriver.PhantomJS(PHANTOM_PATH)
-#browser = webdriver.Chrome('C:\phantomjs\chromedriver.exe')
+emoji_pattern = re.compile("["
+        u"\U0001F600-\U0001F64F"  # emoticons
+        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+        u"\U0001F680-\U0001F6FF"  # transport & map symbols
+        u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                           "]+", flags=re.UNICODE)
 def parseContent():
     # HTML 분석하기
     page = 0
@@ -72,8 +77,12 @@ def parseContent():
                             #video
                             elif cont_child.name == 'iframe':
                                 content += cont_child.attrs['src'] + "\\"
+                            #audio
+                            elif cont_child.name == 'audio':
+                                pass
                             #text
                             elif type(cont_child) is bs4.element.NavigableString :
+                                cont_child = emoji_pattern.sub(r'',cont_child)
                                 content += cont_child
                             content += "\\"
                             
