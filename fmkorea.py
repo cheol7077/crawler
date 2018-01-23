@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+import re
 from bs4 import BeautifulSoup
 import bs4
 import urllib.parse as parse
@@ -78,7 +79,7 @@ def parseContent():
                                     file_path_arr.append(file_path) 
                             elif child.name == 'iframe':
                                 content_value += child.attrs['src']                            
-                            elif cont_child.name == 'audio':
+                            elif child.name == 'audio':
                                 pass
                             elif type(child) is bs4.element.NavigableString and child != EXCEPTION:
                                 child = emoji_pattern.sub(r'',child)

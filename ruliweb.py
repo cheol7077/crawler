@@ -1,10 +1,11 @@
-import time
+import re
 import urllib.request
 from bs4 import BeautifulSoup
 import pymysql.cursors
 import connDB
 import serve
 import datetime
+import time
 import urllib.request as req
 emoji_pattern = re.compile("["
         u"\U0001F600-\U0001F64F"  # emoticons
@@ -47,9 +48,9 @@ def parseContent():
                 contents = soup_article.select_one(".view_content")
                 content = ""
                 
-                time = soup_article.select_one(".regdate").text
-                time = time.replace(".","-")
-                gdate = time.replace("(","")
+                date = soup_article.select_one(".regdate").text
+                date = date.replace(".","-")
+                gdate = date.replace("(","")
                 gdate = gdate[0:16]
 
                 gdate = datetime.datetime.strptime(gdate, '%Y-%m-%d %H:%M')
@@ -77,7 +78,7 @@ def parseContent():
                             cont = emoji_pattern.sub(r'',item.string)
                             content += cont 
                     #audio
-                    elif cont_child.name == 'audio':
+                    elif item.name == 'audio':
                         pass
                     elif item.name == "iframe":
                         content += item.attrs['src']
