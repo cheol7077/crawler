@@ -8,6 +8,8 @@ import time
 import serve
 import connDB
 import datetime
+from extraction import noun
+
 emoji_pattern = re.compile("["
         u"\U0001F600-\U0001F64F"  # emoticons
         u"\U0001F300-\U0001F5FF"  # symbols & pictographs
@@ -22,23 +24,25 @@ CONTENT = "#bd_capture > div.rd_body.clear > article > div"
 DATE = "#bd_capture > div.rd_hd.clear > div.board.clear > div.top_area.ngeb > span"
 HITS = '#bd_capture > div.rd_hd.clear > div.board.clear > div.btm_area.clear > div.side.fr > span:nth-of-type(1) > b'
 COMMENTCNT = '#bd_capture > div.rd_hd.clear > div.board.clear > div.btm_area.clear > div.side.fr > span:nth-of-type(3) > b'
+
 def parseContent():
     page = 0
     loop = True
     lastCont = ''
     while loop:
         page += 1
-
         html = serve.getUrl('fmkorea', page)
         soup = BeautifulSoup(html, "html.parser")
         titles = soup.select(LINK_LIST)
-
+        
         for title in titles:
+            start_time = time.time()
             if title.string is not None:
-                time.sleep(2)
                 title_value = title.string
+                text = title_value + ' '
                 link_value = BASE_URL + title.attrs['href']
                 content_value = ""
+                
                 r = req.Request(link_value, headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'})
                 html = req.urlopen(r)                
                 soup = BeautifulSoup(html, "html.parser")
@@ -84,18 +88,22 @@ def parseContent():
                             elif type(child) is bs4.element.NavigableString and child != EXCEPTION:
                                 child = emoji_pattern.sub(r'',child)
                                 content_value += child
+                                text += child + ' '
+                                
                             content_value += "\\"
                     hits = soup.select(HITS)
                     commentCnt = soup.select(COMMENTCNT)
                     hits = hits[0].text
                     commentCnt = commentCnt[0].text
                 #이거
-                    last_insert_id = connDB.insert(boardID.replace('/',''), title_value, content_value, date_value, link_value, hits, commentCnt, 'c1')
+                    keywords = noun(text)
+                    last_insert_id = connDB.insert(boardID.replace('/',''), title_value, content_value, date_value, link_value, hits, commentCnt, 'c1', keywords)
                     if (last_insert_id and file_name_arr):
                         for index, file in enumerate(file_name_arr):          
                             connDB.insertAttachFile(file_name_arr[index], file_path_arr[index], last_insert_id)
                 
-                else : #db에 있는거면 조회수랑 댓글수 가져오기     
+                else : #db에 있는거면 조회수랑 댓글수 가져오기
+                    print('update!')     
                     hits = soup.select(HITS)
                     commentCnt = soup.select(COMMENTCNT)
                     hits = hits[0].text
@@ -103,7 +111,8 @@ def parseContent():
                     connDB.update(hits, commentCnt, link_value)
 
                 
-
+            end_time = time.time()
+            print('FM: {}'.format(end_time - start_time))
         if loop is False:
             break
 

@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import pymysql.cursors
 
-def insert (boardID, title, content, date, url, hits, commentCnt, communityID) :
+def insert (boardID, title, content, date, url, hits, commentCnt, communityID, keywords) :
     conn = pymysql.connect(host='localhost',
         user = 'root',
         password = 'hubhub',
@@ -10,9 +10,9 @@ def insert (boardID, title, content, date, url, hits, commentCnt, communityID) :
     
     with conn.cursor() as cursor:
 
-        sql = '''INSERT INTO board (boardID, title, content, date, url, hits, commentCnt, communityID)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)'''
-        cursor.execute(sql, (boardID, title, content, date, url, hits, commentCnt, communityID))
+        sql = '''INSERT INTO board (boardID, title, content, date, url, hits, commentCnt, communityID, keywords)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)'''
+        cursor.execute(sql, (boardID, title, content, date, url, hits, commentCnt, communityID, keywords))
         conn.commit()
         last_insert_id = cursor.lastrowid    
         conn.close()

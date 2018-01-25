@@ -6,6 +6,8 @@ import pymysql.cursors
 import connDB
 import serve
 import datetime
+from extraction import noun
+import time
 PHANTOM_PATH = "C:\\phantomjs\\phantomjs.exe"
 browser = webdriver.PhantomJS(PHANTOM_PATH)
 emoji_pattern = re.compile("["
@@ -25,6 +27,7 @@ def parseContent():
         boardList = soup.select('.li_sbj > a')
 
         for board in boardList :
+            start_time = time.time()
             boardUrl = "http://web.humoruniv.com//board/humor/" + board.attrs['href']
             browser.get(boardUrl)
             html = browser.page_source
@@ -45,6 +48,7 @@ def parseContent():
                 #제목
                 title = soup.select_one("#ai_cm_title")
                 title = title.text  #text content string 중에 되는거 ㅋㅋㅋ
+                text = title + ' '
 
                 date = soup.select_one("#if_date > span:nth-of-type(1)").text.strip() #게시글 작성시간으로 최신순 정렬 
                 date = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
@@ -85,13 +89,16 @@ def parseContent():
                         if 'var mp3str' in cont_child:
                            continue
                         content += cont_child
+                        text += cont_child + ' '
                     content += "\\"
                 hits = soup.select_one('#content_info > span:nth-of-type(5)').text
                 if ',' in hits:
                     hits = hits.replace(',','')
                 commentCnt = soup.find(string = re.compile(r"답글마당"))            
                 commentCnt = re.sub('[^0-9]', '', commentCnt)
-                last_insert_id = connDB.insert(boardID, title, content, date, contentUrl, hits, commentCnt, 'c3')
+                
+                keywords = noun(text)
+                last_insert_id = connDB.insert(boardID, title, content, date, contentUrl, hits, commentCnt, 'c3', keywords)
                 if (last_insert_id and file_name_arr):
                     for index, file in enumerate(file_name_arr):
                         connDB.insertAttachFile(file_name_arr[index], file_path_arr[index], last_insert_id)
@@ -103,7 +110,8 @@ def parseContent():
                 commentCnt = soup.find(string = re.compile(r"답글마당"))            
                 commentCnt = re.sub('[^0-9]', '', commentCnt)
                 connDB.update(hits, commentCnt, boardID)
-
+            end_time = time.time()
+            print('웃대: {}'.format(end_time - start_time))        
         if loop is False:
             break
 

@@ -7,6 +7,8 @@ import pymysql.cursors
 import connDB
 import serve
 import datetime
+from extraction import noun
+import time
 PHANTOM_PATH = "C:\\phantomjs\\phantomjs.exe"
 browser = webdriver.PhantomJS(PHANTOM_PATH)
 emoji_pattern = re.compile("["
@@ -26,6 +28,7 @@ def parseContent():
         boardList = soup.find_all("tr", class_= re.compile(r'list0|list1'))
 
         for board in boardList :
+            start_time = time.time()
             for child in board.descendants :     #얘는 자손 전부 들르는애
                 if child.name == 'a' and child.attrs['href'] is not '#' :             #tag 명 갖고오는거
                     link = child.attrs['href'].split('&')
@@ -53,6 +56,7 @@ def parseContent():
                         #제목
                         title = soup.select_one(".view_title2")
                         title = title.text  #text content string 중에 되는거 ㅋㅋㅋ
+                        text = title + ' '
 
                         boardID = boardUrl.split('no=')[-1]
 
@@ -84,6 +88,7 @@ def parseContent():
                             elif type(cont_child) is bs4.element.NavigableString :
                                 cont_child = emoji_pattern.sub(r'',cont_child)
                                 content += cont_child
+                                text += cont_child + ' '
                             content += "\\"
                             
                         try :
@@ -92,11 +97,11 @@ def parseContent():
                             commentCnt = 0
                         else :
                             commentCnt = int(commentCnt)
-                        
                         hits = soup.find(string = re.compile(r"조회수: \d+")).strip()
                         hits = hits.split("/")[0].strip()
-                        hits = hits.split(": ")[1].strip()                            
-                        last_insert_id = connDB.insert(boardID, title, content, date, contentUrl, hits, commentCnt, 'c2')
+                        hits = hits.split(": ")[1].strip()
+                        keywords = noun(text)                            
+                        last_insert_id = connDB.insert(boardID, title, content, date, contentUrl, hits, commentCnt, 'c2', keywords)
                         if (last_insert_id and file_name_arr):
                             for index, file in enumerate(file_name_arr):
                                 connDB.insertAttachFile(file_name_arr[index], file_path_arr[index], last_insert_id)
@@ -112,7 +117,8 @@ def parseContent():
                         hits = hits.split("/")[0].strip()
                         hits = hits.split(": ")[1].strip()    
                         connDB.update(hits, commentCnt, contentUrl)
-                            
+            end_time = time.time()
+            print('뽐뿌: {}'.format(end_time - start_time))                
         if loop is False:
             break;
 

@@ -7,6 +7,7 @@ import serve
 import datetime
 import time
 import urllib.request as req
+from extraction import noun
 emoji_pattern = re.compile("["
         u"\U0001F600-\U0001F64F"  # emoticons
         u"\U0001F300-\U0001F5FF"  # symbols & pictographs
@@ -21,8 +22,10 @@ def parseContent():
         html = serve.getUrl('ruliweb', page)
         soup = BeautifulSoup(html, "html.parser")
         for i in range(0, 29): 
+            start_time = time.time()
             time.sleep(2)
             title = str(soup.select(".table_body div a")[i].text.strip())
+            text = title + ' '
             link = soup.select(".table_body div a")[i]
             url_article = str(link.attrs["href"])
             url_article = url_article.split('?')[0]
@@ -76,7 +79,8 @@ def parseContent():
                     elif item.name == "p" :
                         if item.string is not None : 
                             cont = emoji_pattern.sub(r'',item.string)
-                            content += cont 
+                            content += cont
+                            text += cont + ' ' 
                     #audio
                     elif item.name == 'audio':
                         pass
@@ -84,7 +88,8 @@ def parseContent():
                         content += item.attrs['src']
                     content += '\\'
 
-                last_insert_id = connDB.insert(boardID, title, content, gdate, url_article, hits, replyCnt,'c4')
+                keywords = noun(text)
+                last_insert_id = connDB.insert(boardID, title, content, gdate, url_article, hits, replyCnt,'c4', keywords)
                 if (last_insert_id and file_name_arr):
                     for index, file in enumerate(file_name_arr):
                         connDB.insertAttachFile(file_name_arr[index], file_path_arr[index], last_insert_id)
@@ -95,6 +100,8 @@ def parseContent():
                 replyCnt = replyCnt.replace("(", "")
                 replyCnt = replyCnt.replace(")", "")
                 connDB.update(hits, replyCnt, url_article)
-      
+            
+            end_time = time.time()
+            print('루리웹: {}'.format(end_time - start_time))
         if loop is False:
             break
