@@ -35,13 +35,14 @@ def parseContent():
     new = True
     page = INIT_PAGE
     
-    while new:    
+    while new:
+        print('ongoing ppomppu page.{}'.format(page))         
         rowList = getRowList(page)
 
         for row in rowList:
             try:
                 dateValue = datetime.strptime(row.select_one(DATE_SELECTOR)['title'], '%y.%m.%d %H:%M:%S')
-                timeLimit = datetime.now() - timedelta(days=2)
+                timeLimit = datetime.now() - timedelta(days=1)
                 
                 if (dateValue - timeLimit).total_seconds() <= 0:
                     new = False

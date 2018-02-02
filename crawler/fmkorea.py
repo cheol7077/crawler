@@ -31,13 +31,14 @@ def parseContent():
     new = True
     page = INIT_PAGE
     
-    while new:        
+    while new:
+        print('ongoing fmkorea page.{}'.format(page))        
         rowList = getRowList(page)
 
         for row in rowList:
             if not row.has_attr('class'):
                 dateValue = getDateText(row)
-                timeLimit = datetime.now() - timedelta(days=2)
+                timeLimit = datetime.now() - timedelta(days=1)
                 
                 if (dateValue - timeLimit).total_seconds() <= 0:
                     new = False

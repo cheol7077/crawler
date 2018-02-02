@@ -1,2 +1,5 @@
-/.project
-/.pydevproject
+*.project
+*.pydevproject
+*.pyc
+*.prefs
+*.log

@@ -27,11 +27,12 @@ def parseContent():
     new = True
     page = INIT_PAGE
     
-    while new:      
+    while new:
+        print('ongoing ruliweb page.{}'.format(page))           
         rowList = getRowList(page)
         for row in rowList:    
             dateValue = getDateText(row)
-            timeLimit = datetime.now() - timedelta(days=2)            
+            timeLimit = datetime.now() - timedelta(days=1)            
             if (dateValue - timeLimit).total_seconds() <= 0:
                 new = False
                 break

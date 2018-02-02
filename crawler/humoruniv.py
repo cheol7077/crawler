@@ -1,4 +1,9 @@
 # -*- coding:utf-8 -*-
+
+import sys
+import os
+sys.path.insert(0, "/crawler/site")
+
 import connDB
 import serve
 from re import search
@@ -35,13 +40,14 @@ def parseContent():
     new = True
     page = INIT_PAGE
     
-    while new:    
+    while new:
+        print('ongoing humoruniv page.{}'.format(page))      
         rowList = getRowList(page)
         
         for row in rowList:
             if row.has_attr('id'):
                 dateValue = getDateText(row)
-                timeLimit = datetime.now() - timedelta(days=2)
+                timeLimit = datetime.now() - timedelta(days=1)
             
                 if (dateValue - timeLimit).total_seconds() <= 0:
                     new = False

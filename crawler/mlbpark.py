@@ -35,13 +35,14 @@ def parseContent():
     new = True
     page = INIT_PAGE
     
-    while new:     
+    while new:
+        print('ongoing mlbpark page.{}'.format(page))          
         rowList = getRowList(page)
         
         for row in rowList:
             if bool(re.match('[0-9]', row.select_one('td').text)):
                 dateValue = datetime.strptime(getDateText(row), '%Y-%m-%d %H:%M:%S')
-                timeLimit = datetime.now() - timedelta(days=2)
+                timeLimit = datetime.now() - timedelta(days=1)
                 
                 if (dateValue - timeLimit).total_seconds() <= 0:
                     new = False
