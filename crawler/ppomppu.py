@@ -113,6 +113,3 @@ def getCocntText(row):
         
     return nocText
 
-if __name__ == "__main__":
-    parseContent()
-    

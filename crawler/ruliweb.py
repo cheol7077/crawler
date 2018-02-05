@@ -106,8 +106,3 @@ def getRecText(row):
         recText = tag.select_one('span').string
     
     return recText
-
-'''
-if __name__ == "__main__":
-    parseContent()
-'''
