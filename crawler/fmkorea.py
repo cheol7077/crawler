@@ -17,7 +17,6 @@ REC_SELECTOR = 'td:nth-of-type(6)'
 
 INIT_PAGE = 1
 
-
 def parseContent():
     print('fmkorea start!')
     total = 0
@@ -25,6 +24,7 @@ def parseContent():
     insertFail = 0
     updateValue = 0
     updateFail = 0
+    timeFlag = 0 
     
     db = connDB.connDB()
     
@@ -37,7 +37,7 @@ def parseContent():
 
         for row in rowList:
             if not row.has_attr('class'):
-                dateValue = getDateText(row)
+                dateValue, timeFlag = getDateText(row, timeFlag)
                 timeLimit = datetime.now() - timedelta(days=1)
                 
                 if (dateValue - timeLimit).total_seconds() <= 0:
@@ -85,18 +85,31 @@ def getRowList(page):
     return rowList
 
 
-def getDateText(row):
+def getDateText(row, timeFlag):
     dateText = row.select_one(DATE_SELECTOR).string.strip()
-    
+
     if dateText.count('.') == 0:
-        now = datetime.now()
-        dateText = str(now.year) + '-' + '{:02d}'.format(now.month) + '-' + str(now.day) + ' ' + dateText
+        if timeFlag == 0:
+            timeFlag = configTimeFlag(dateText) 
+        if timeFlag == 0: 
+            now = datetime.now()          
+            dateText = str(now.year) + '-' + '{:02d}'.format(now.month) + '-' + str(now.day) + ' ' + dateText
+        elif timeFlag != 0:
+            yesterday = datetime.now() - timedelta(1)            
+            dateText = str(yesterday.year) + '-' + '{:02d}'.format(yesterday.month) + '-' + str(yesterday.day) + ' ' + dateText
     else:
-        dateText = dateText.replace('.', '-') + ' 00:00'
-    
-    return datetime.strptime(dateText, '%Y-%m-%d %H:%M')
+        dateText = dateText.replace('.', '-') + ' 00:00' 
+    return datetime.strptime(dateText, '%Y-%m-%d %H:%M'), timeFlag
 
-
+def configTimeFlag(dateText):
+    now = datetime.now()
+    nowT= timedelta(hours = now.hour, minutes = now.minute)    
+    dateTextT = timedelta(hours = int(dateText.split(':')[0]), minutes = int(dateText.split(':')[1]))
+    if (nowT < dateTextT) :        
+        return 1
+    else :
+        return 0
+                
 def getCocntText(row):
     tag = row.select_one(COCNT_SELECTOR)
     
