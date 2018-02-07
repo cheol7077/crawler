@@ -4,7 +4,7 @@ import re
 from time import sleep
 from datetime import datetime, timedelta
 from urllib.parse import urlparse, parse_qs
-import serve
+from .base import getSoup
 
 DRIVER = 'C:\\chromedriver.exe'
 PPOMPPU_PAGE = 'http://www.ppomppu.co.kr/zboard/zboard.php?id=freeboard&page='
@@ -87,7 +87,7 @@ def parseContent():
 
 def getRowList(page): 
     pageUrl = PPOMPPU_PAGE + str(page)
-    soup = serve.getSoup(pageUrl)
+    soup = getSoup(pageUrl)
     rowList = soup.find_all("tr", class_= re.compile(r'list0|1'))
     
     return rowList

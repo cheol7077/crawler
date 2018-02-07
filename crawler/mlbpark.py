@@ -7,7 +7,7 @@ from bs4 import element
 from datetime import datetime, timedelta
 from urllib.parse import urlparse, parse_qs
 from time import sleep
-import serve
+from .base import getSoup
 
 MLBPARK_PAGE = 'http://mlbpark.donga.com/mp/b.php?m=list&b=bullpen&query=&select=&user=&p='
 MLBPARK_VIEW = 'http://mlbpark.donga.com/mp/b.php?p=1&b=bullpen&select=&query=&user=&site=donga.com&reply=&source=&sig=h6j9Gg-Yg3DRKfX@hlj9GY-1khlq&id='
@@ -83,7 +83,7 @@ def parseContent():
 
 def getRowList(page): 
     pageUrl = MLBPARK_PAGE + str(page)
-    soup = serve.getSoup(pageUrl)
+    soup = getSoup(pageUrl)
     rowList = soup.select(ROW_SELECTOR)
     return rowList
 

@@ -1,11 +1,6 @@
 # -*- coding:utf-8 -*-
-
-import sys
-import os
-sys.path.insert(0, "/crawler/site")
-
 import connDB
-import serve
+from .base import getSoup
 from re import search
 from bs4 import element
 from datetime import datetime, timedelta
@@ -87,7 +82,7 @@ def parseContent():
 
 def getRowList(page):
     pageUrl = HUMORUNIV_PAGE + str(page)
-    soup = serve.getSoup(pageUrl)
+    soup = getSoup(pageUrl)
     rowList = soup.select(ROW_SELECTOR)
 
     return rowList
@@ -123,7 +118,3 @@ def getCocntText(row):
         cocntText = search('\[(\d+)\]', cocntText).group(1)
     
     return cocntText
-'''
-if __name__ == "__main__":
-    parseContent()
-'''

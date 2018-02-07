@@ -2,7 +2,7 @@
 import connDB
 from datetime import datetime, timedelta
 from time import sleep
-import serve
+from .base import getSoup
 
 RULIWEB_PAGE = 'http://bbs.ruliweb.com/community/board/300143/list?cate=497&page='
 RULIWEB_VIEW = 'http://bbs.ruliweb.com/community/board/300143/read/' #+boardid
@@ -72,7 +72,7 @@ def parseContent():
 
 def getRowList(page): 
     pageUrl = RULIWEB_PAGE + str(page)
-    soup = serve.getSoup(pageUrl)
+    soup = getSoup(pageUrl)
     rowList = soup.find_all(lambda tag: tag.name == 'tr' and tag.get('class') == ['table_body'])  
     return rowList
 

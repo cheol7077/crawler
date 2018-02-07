@@ -1,7 +1,6 @@
-
 # -*- coding:utf-8 -*-
-import pymysql.cursors
-import traceback
+import pymysql
+
 class connDB:    
     def __init__(self):    
         self.conn = pymysql.connect(host='localhost',
@@ -22,10 +21,9 @@ class connDB:
                             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)'''
             result = self.cursor.execute(sql, values)
             self.conn.commit()                
-        except :
-            print('insert err: ')
-            traceback.print_exc()
-            result = None
+        except Exception as e:
+            print('insert err: '+e)  
+            result = 0   
         return result        
 
     def update (self, values) : #hits, cocnt, rec, url
@@ -33,11 +31,10 @@ class connDB:
             sql = '''UPDATE board SET hits=%s, cocnt=%s, rec=%s where url=%s'''
             result = self.cursor.execute(sql, values)
             self.conn.commit()                
-        except :
-            print('update err: ')
-            traceback.print_exc()
-            result = None            
-        return result
+        except Exception as e:
+            print('update err: '+e)  
+            result = 0   
+        return result  
 
     def select (self, values) :
         sql = '''SELECT url from board where url = %s'''
@@ -45,33 +42,4 @@ class connDB:
         result = self.cursor.rowcount                
         return result
 
-'''        
-    def insert (self, values) : #bid, title, keywords, date, url, hits, coCnt, rec, cid
-        try:
-            sql = 'INSERT INTO board (bid, title, keywords, date, url, hits, coCnt, rec, cid)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)'
-            result = self.cursor.execute(sql, values)
-            self.conn.commit()                
-        except :
-            print('insert err: ')
-            traceback.print_exc()
-            result = None
-        return result
-'''
-'''
 
-def insertAttachFile(file_name, file_path, board_id) :
-    conn = pymysql.connect(host='localhost',
-        user = 'root',
-        password = 'hubhub',
-        db='community',
-        charset='utf8mb4')
-
-    with conn.cursor() as cursor:
-        sql = 'INSERT INTO attachFile (file_name, path, board_id_fk)
-                    VALUES (%s, %s, %s)'
-        cursor.execute(sql, (file_name, file_path, board_id))
-        conn.commit()
-        conn.close()
-
-'''

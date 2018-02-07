@@ -2,7 +2,7 @@
 import connDB
 from datetime import datetime, timedelta
 from time import sleep
-import serve
+from .base import getSoup
 from urllib.parse import urlparse
 
 FMKOREA_PAGE = 'http://www.fmkorea.com/index.php?mid=humor&page='
@@ -79,7 +79,7 @@ def parseContent():
     
 def getRowList(page): 
     pageUrl = FMKOREA_PAGE + str(page)
-    soup = serve.getSoup(pageUrl)
+    soup = getSoup(pageUrl)
     rowList = soup.select(ROW_SELECTOR)
 
     return rowList
